@@ -51,12 +51,12 @@ struct std::formatter<Complex>
 			return it;
 		}
 
-		switch (*it++)
+		if (*it++ == 'p')
 		{
-		case 'p':
 			m_polar = true;
-			break;
-		default:
+		}
+		else
+		{
 			throw std::format_error("invalid format");
 		}
 
