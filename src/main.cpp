@@ -17,6 +17,6 @@ int main()
 	{
 		MyString str("Hello, world!");
 		std::print("{}\n", str);
-		std::print("{:*^20}\n", str);
+		//std::print("{:*^20}\n", str);
 	}
 }
