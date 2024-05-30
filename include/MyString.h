@@ -14,8 +14,14 @@ private:
 };
 
 template <>
-struct std::formatter<MyString> : std::formatter<std::string_view>
+struct std::formatter<MyString> // inheritance isn't relevant
 {
+	template <typename ParseContext>
+	constexpr auto parse(ParseContext& ctx)
+	{
+		return ctx.begin();
+	}
+
 	auto format(const MyString& str, auto& ctx) const
 	{
 		return std::format_to(ctx.out(), "{}", str.m_str);
