@@ -40,35 +40,22 @@ private:
 template <>
 struct std::formatter<Complex>
 {
-	bool m_polar = false;
+	std::formatter<double> m_underlying;
 
 	constexpr auto parse(auto& ctx)
 	{
-		auto it = ctx.begin();
-
-		if (it == ctx.end() or *it == '}')
-		{
-			return it;
-		}
-
-		if (*it++ == 'p')
-		{
-			m_polar = true;
-		}
-		else
-		{
-			throw std::format_error("invalid format");
-		}
-
-		return it;
+		return m_underlying.parse(ctx);
 	}
 
 	auto format(const Complex& complex, auto& ctx) const
 	{
-		if (m_polar)
-		{
-			return std::format_to(ctx.out(), "({} * e^({}i))", complex.radius(), complex.angle());
-		}
-		return std::format_to(ctx.out(), "({} + {}i)", complex.real(), complex.imag());
+		auto out = std::format_to(ctx.out(), "(");
+		ctx.advance_to(out);
+		out = m_underlying.format(complex.real(), ctx);
+		out = std::format_to(out, " + ");
+		ctx.advance_to(out);
+		out = m_underlying.format(complex.imag(), ctx);
+		out = std::format_to(out, "i)");
+		return out;
 	}
 };
