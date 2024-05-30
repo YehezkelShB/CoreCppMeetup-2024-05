@@ -16,11 +16,8 @@ private:
 template <>
 struct std::formatter<MyString> : std::formatter<std::string_view>
 {
-	using Base = std::formatter<std::string_view>;
-
-	template <typename FormatContext>
-	auto format(const MyString& str, FormatContext& ctx) const
+	auto format(const MyString& str, auto& ctx) const
 	{
-		return Base::format(str.m_str, ctx);
+		return std::format_to(ctx.out(), "{}", str.m_str);
 	}
 };
