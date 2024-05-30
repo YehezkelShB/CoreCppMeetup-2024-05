@@ -41,9 +41,33 @@ template <>
 struct std::formatter<Complex>
 {
 	std::formatter<double> m_underlying;
+	bool m_polar = false;
 
 	constexpr auto parse(auto& ctx)
 	{
+		auto it = ctx.begin();
+		auto end = ctx.end();
+		if (it == end || *it == '}')
+		{
+			return it;
+		}
+
+		auto endOfCustom = std::ranges::find(it, end, ':');
+
+		if (it != endOfCustom) {
+			if (*it != 'p') throw std::format_error("invalid format");
+			m_polar = true;
+			++it;
+		}
+
+		if (it == end || *it == '}')
+		{
+			return it;
+		}
+
+		if (it != endOfCustom) throw std::format_error("invalid format");
+
+		ctx.advance_to(++endOfCustom);
 		return m_underlying.parse(ctx);
 	}
 
@@ -51,11 +75,11 @@ struct std::formatter<Complex>
 	{
 		auto out = std::format_to(ctx.out(), "(");
 		ctx.advance_to(out);
-		out = m_underlying.format(complex.real(), ctx);
-		out = std::format_to(out, " + ");
+		out = m_underlying.format(m_polar ? complex.radius() : complex.real(), ctx);
+		out = std::format_to(out, "{}", m_polar ? " * e^(" : " + ");
 		ctx.advance_to(out);
-		out = m_underlying.format(complex.imag(), ctx);
-		out = std::format_to(out, "i)");
+		out = m_underlying.format(m_polar ? complex.angle() : complex.imag(), ctx);
+		out = std::format_to(out, "{}", m_polar ? "i))" : "i)");
 		return out;
 	}
 };

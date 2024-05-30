@@ -24,6 +24,9 @@ int main()
 	{
 		Complex complex(3.123, 2.7);
 		std::print("{}\n", complex);
-		std::print("{:f}\n", complex);
+		std::print("{:p}\n", complex);
+		std::print("{:p:f}\n", complex);
+		std::print("{::f}\n", complex);
+		std::print("{::}\n", complex);
 	}
 }
